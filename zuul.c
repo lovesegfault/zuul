@@ -2,7 +2,7 @@
 
 #define MICROS_IN_S 100000000
 
-typedef enum {
+enum text_color {
     RED,
     RED_B,
     GREEN,
@@ -16,9 +16,9 @@ typedef enum {
     CYAN,
     CYAN_B,
     NORMAL,
-} text_color;
+};
 
-static const char *get_color(text_color c) {
+static const char *get_color(enum text_color c) {
     static char *ansi = NULL;
     switch (c) {
         case RED:
@@ -64,7 +64,7 @@ static const char *get_color(text_color c) {
     return ansi;
 }
 
-void printc(text_color c, const char *format, ...) {
+void printc(enum text_color c, const char *format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -87,28 +87,28 @@ void assert_section(const char *name, struct t_result *results) {
     printc(BLUE, "    » ");
     printc(BLUE_B, "%s", name);
     printc(BLUE, " | ");
-    text_color status = (results->failed > 0) ? RED_B : GREEN_B;
+    enum text_color status = (results->failed > 0) ? RED_B : GREEN_B;
     size_t total = results->failed + results->succeeded;
     printc(status, "PASSED %zu/%zu", results->succeeded, total);
     printc(BLUE, " | TOOK %Lf\n", results->total / MICROS_IN_S);
 }
 
 long double elapsed_micros(struct timeval start, struct timeval end) {
-    micros start_micros, end_micros;
-    start_micros = (micros) (start.tv_sec * MICROS_IN_S) + (micros) (start.tv_usec);
-    end_micros = (micros) (end.tv_sec * MICROS_IN_S) + (micros) (end.tv_usec);
+    long double start_micros, end_micros;
+    start_micros = (long double) (start.tv_sec * MICROS_IN_S) + (long double) (start.tv_usec);
+    end_micros = (long double) (end.tv_sec * MICROS_IN_S) + (long double) (end.tv_usec);
     return end_micros - start_micros;
 }
 
 
 struct test_time {
-    micros max;
-    micros min;
-    micros avg;
-    micros total;
+    long double max;
+    long double min;
+    long double avg;
+    long double total;
 };
 
-struct test_time compute_time(const micros *times, size_t len) {
+struct test_time compute_time(const long double *times, size_t len) {
     struct test_time t = {.total = 0, .avg = 0, .min = times[0], .max = 0};
     for (size_t i = 0; i < len; ++i) {
         if (times[i] > t.max) t.max = times[i];
@@ -157,7 +157,7 @@ void *loading(void *arg) {
     return NULL;
 }
 
-bool assert(const char *name, test_fn test, struct t_result *results, size_t runs) {
+bool assert(const char *name, bool (*test_fn)(), struct t_result *results, size_t runs) {
     bool result = true;
     struct thread_data load = {.name=name, .kill=false};
     pthread_t load_thread;
@@ -168,7 +168,7 @@ bool assert(const char *name, test_fn test, struct t_result *results, size_t run
         struct timeval start, end;
 
         gettimeofday(&start, 0);
-        result &= (*test)();
+        result &= (*test_fn)();
         gettimeofday(&end, 0);
 
         // We could use a rolling average, but precision is crucial here

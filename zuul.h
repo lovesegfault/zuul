@@ -10,13 +10,13 @@
 #include <pthread.h>
 #include <unistd.h>
 
-typedef long double micros;
 
 typedef bool (*test_fn)();
+
 struct t_result{
     size_t succeeded;
     size_t failed;
-    micros total;
+    long double total;
 };
 
 void section(const char *name);
