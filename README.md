@@ -14,7 +14,7 @@ functions, and works with any compiler, and with all POSIX systems.
 ## Features
 
 * Portable
-    - zuul works on all Linux, MacOS, BSD, and other POSIX systems
+    - zuul works on Linux, MacOS, BSD, and other POSIX systems
 * Simple
     - zuul is composed of only 3 functions!
 * Extensible
