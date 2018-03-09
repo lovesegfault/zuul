@@ -24,7 +24,7 @@ functions, and works with any compiler, and with all POSIX systems.
 * Pretty
     - zuul produces beautiful, readable output
 * Interoperable
-    - zuul can output in JSON and other formats
+    - zuul can output to JSON and other formats
     
 ## Non-goals
 
