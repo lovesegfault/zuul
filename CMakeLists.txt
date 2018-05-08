@@ -18,5 +18,12 @@ set(CMAKE_C_FLAGS_DEBUG "-std=c99 -g ${DEBUG_OPT} ${SANITIZE} ${WARNINGS}")
 set(CMAKE_C_FLAGS_RELEASE "-std=c99 -O3 -flto ${TUNE} ${WARNINGS}")
 
 find_library(pthread_lib pthread)
-add_library(zuul STATIC zuul.c)
+
+# zuul
+add_library(zuul STATIC src/zuul.c src/fifo.c src/fifo.h src/printc.c src/printc.h)
+set_target_properties(zuul PROPERTIES COMPILE_FLAGS "-DTESTS_DISABLED")
 target_link_libraries(zuul pthread_lib)
+
+# tests
+add_executable(tests src/tests.c)
+target_link_libraries(tests zuul)
