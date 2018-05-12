@@ -10,6 +10,7 @@
 
 #include "fifo.h"
 #include "printc.h"
+#include "threadpool.h"
 
 struct test {
     const char *name;
@@ -25,9 +26,9 @@ struct test *test_init(const char *name, bool (*test_fn)(), size_t runs);
 
 bool test_assert(struct test *t);
 
-struct section {
+typedef struct section {
     const char *name;
-    fifo_t *tests;
+    struct threadpool *tp;
 
     size_t tests_succeeded;
     size_t tests_failed;
@@ -38,7 +39,7 @@ struct section {
     void (*assert)(struct section *);
 
     void (*kill)(struct section *);
-};
+} section_t;
 
 struct section section_init(const char *name);
 

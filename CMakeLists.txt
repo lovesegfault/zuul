@@ -19,10 +19,20 @@ set(CMAKE_C_FLAGS_RELEASE "-std=c99 -O3 -flto ${TUNE} ${WARNINGS}")
 
 find_library(pthread_lib pthread)
 
+# fifo
+add_library(fifo STATIC src/fifo.c)
+
+# threadpool
+add_library(tp STATIC src/threadpool.c)
+target_link_libraries(tp fifo)
+
+# printc
+add_library(printc STATIC src/printc.c)
+
 # zuul
-add_library(zuul STATIC src/zuul.c src/fifo.c src/fifo.h src/printc.c src/printc.h)
+add_library(zuul STATIC src/zuul.c)
 set_target_properties(zuul PROPERTIES COMPILE_FLAGS "-DTESTS_DISABLED")
-target_link_libraries(zuul pthread_lib)
+target_link_libraries(zuul pthread fifo tp printc)
 
 # tests
 add_executable(tests src/tests.c)
